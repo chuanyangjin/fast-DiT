@@ -1,0 +1,14 @@
+Starting rank=0, seed=0, world_size=1.
+[[34m2023-05-14 23:20:51[0m] Experiment directory created at results/010-DiT-XL-2
+[[34m2023-05-14 23:21:07[0m] DiT Parameters: 675,129,632
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+[[34m2023-05-14 23:21:11[0m] Dataset contains 1,281,167 images (/scratch/work/public/imagenet/train)
+[[34m2023-05-14 23:21:11[0m] Training for 1400 epochs...
+[[34m2023-05-14 23:21:11[0m] Beginning epoch 0...
+[[34m2023-05-14 23:21:37[0m] Reducer buckets have been rebuilt in this iteration.
+[[34m2023-05-14 23:35:15[0m] (step=0000100) Train Loss: 0.3370, Train Steps/Sec: 0.12
+[[34m2023-05-14 23:49:01[0m] (step=0000200) Train Loss: 0.2013, Train Steps/Sec: 0.12
+[[34m2023-05-15 00:02:47[0m] (step=0000300) Train Loss: 0.1968, Train Steps/Sec: 0.12
+[[34m2023-05-15 00:16:34[0m] (step=0000400) Train Loss: 0.1921, Train Steps/Sec: 0.12
+slurmstepd: error: *** JOB 33359078 ON ga005 CANCELLED AT 2023-05-15T00:20:43 DUE TO TIME LIMIT ***

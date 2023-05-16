@@ -1,0 +1,60 @@
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+[[34m2023-05-16 08:49:37[0m] Experiment directory created at results/030-DiT-XL-2
+[[34m2023-05-16 08:50:04[0m] DiT Parameters: 675,129,632
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+[[34m2023-05-16 08:51:29[0m] Dataset contains 1,281,167 images (/vast/cj2133)
+[[34m2023-05-16 08:51:33[0m] Training for 1400 epochs...
+[[34m2023-05-16 08:51:33[0m] Beginning epoch 0...
+[[34m2023-05-16 08:51:50[0m] Reducer buckets have been rebuilt in this iteration.
+[[34m2023-05-16 08:53:04[0m] (step=0000100) Train Loss: 0.1669, Train Steps/Sec: 1.09
+[[34m2023-05-16 08:54:20[0m] (step=0000200) Train Loss: 0.1018, Train Steps/Sec: 1.33
+[[34m2023-05-16 08:55:35[0m] (step=0000300) Train Loss: 0.0953, Train Steps/Sec: 1.33
+[[34m2023-05-16 08:56:51[0m] (step=0000400) Train Loss: 0.0931, Train Steps/Sec: 1.33
+[[34m2023-05-16 08:58:06[0m] (step=0000500) Train Loss: 0.0956, Train Steps/Sec: 1.33
+[[34m2023-05-16 08:59:21[0m] (step=0000600) Train Loss: 0.0928, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:00:37[0m] (step=0000700) Train Loss: 0.0902, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:01:52[0m] (step=0000800) Train Loss: 0.0885, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:03:07[0m] (step=0000900) Train Loss: 0.0921, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:04:23[0m] (step=0001000) Train Loss: 0.0894, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:05:38[0m] (step=0001100) Train Loss: 0.0914, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:06:53[0m] (step=0001200) Train Loss: 0.0875, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:08:09[0m] (step=0001300) Train Loss: 0.0895, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:09:24[0m] (step=0001400) Train Loss: 0.0875, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:10:39[0m] (step=0001500) Train Loss: 0.0873, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:11:55[0m] (step=0001600) Train Loss: 0.0841, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:13:10[0m] (step=0001700) Train Loss: 0.0877, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:14:25[0m] (step=0001800) Train Loss: 0.0895, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:15:41[0m] (step=0001900) Train Loss: 0.0877, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:16:56[0m] (step=0002000) Train Loss: 0.0871, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:18:12[0m] (step=0002100) Train Loss: 0.0842, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:19:27[0m] (step=0002200) Train Loss: 0.0834, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:20:42[0m] (step=0002300) Train Loss: 0.0848, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:21:58[0m] (step=0002400) Train Loss: 0.0857, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:23:13[0m] (step=0002500) Train Loss: 0.0850, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:24:28[0m] (step=0002600) Train Loss: 0.0870, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:25:44[0m] (step=0002700) Train Loss: 0.0839, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:26:59[0m] (step=0002800) Train Loss: 0.0860, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:28:15[0m] (step=0002900) Train Loss: 0.0837, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:29:30[0m] (step=0003000) Train Loss: 0.0854, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:30:45[0m] (step=0003100) Train Loss: 0.0857, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:32:01[0m] (step=0003200) Train Loss: 0.0842, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:33:16[0m] (step=0003300) Train Loss: 0.0874, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:34:31[0m] (step=0003400) Train Loss: 0.0832, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:35:47[0m] (step=0003500) Train Loss: 0.0835, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:37:02[0m] (step=0003600) Train Loss: 0.0857, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:38:17[0m] (step=0003700) Train Loss: 0.0860, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:39:33[0m] (step=0003800) Train Loss: 0.0839, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:40:48[0m] (step=0003900) Train Loss: 0.0814, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:42:03[0m] (step=0004000) Train Loss: 0.0813, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:43:19[0m] (step=0004100) Train Loss: 0.0832, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:44:34[0m] (step=0004200) Train Loss: 0.0880, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:45:49[0m] (step=0004300) Train Loss: 0.0825, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:47:05[0m] (step=0004400) Train Loss: 0.0827, Train Steps/Sec: 1.33
+[[34m2023-05-16 09:48:20[0m] (step=0004500) Train Loss: 0.0865, Train Steps/Sec: 1.33
+slurmstepd: error: *** JOB 33461175 ON ga034 CANCELLED AT 2023-05-16T09:49:20 DUE TO TIME LIMIT ***

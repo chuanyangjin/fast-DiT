@@ -1,0 +1,72 @@
+Starting rank=0, seed=0, world_size=1.
+[[34m2023-05-14 10:57:59[0m] Experiment directory created at results/001-DiT-XL-2
+[[34m2023-05-14 10:58:15[0m] DiT Parameters: 675,129,632
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+[[34m2023-05-14 10:58:18[0m] Dataset contains 1,281,167 images (/scratch/work/public/imagenet/train)
+[[34m2023-05-14 10:58:18[0m] Training for 1400 epochs...
+[[34m2023-05-14 10:58:18[0m] Beginning epoch 0...
+Traceback (most recent call last):
+  File "/scratch/cj2133/Accelerating-DiT/train_original.py", line 269, in <module>
+    main(args)
+  File "/scratch/cj2133/Accelerating-DiT/train_original.py", line 206, in main
+    loss_dict = diffusion.training_losses(model, x, t, model_kwargs)
+  File "/scratch/cj2133/Accelerating-DiT/diffusion/respace.py", line 97, in training_losses
+    return super().training_losses(self._wrap_model(model), *args, **kwargs)
+  File "/scratch/cj2133/Accelerating-DiT/diffusion/gaussian_diffusion.py", line 747, in training_losses
+    model_output = model(x_t, t, **model_kwargs)
+  File "/scratch/cj2133/Accelerating-DiT/diffusion/respace.py", line 129, in __call__
+    return self.model(x, new_ts, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1040, in forward
+    output = self._run_ddp_forward(*inputs, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1000, in _run_ddp_forward
+    return module_to_run(*inputs[0], **kwargs[0])
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/scratch/cj2133/Accelerating-DiT/models_original.py", line 245, in forward
+    x = block(x, c)                      # (N, T, D)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/scratch/cj2133/Accelerating-DiT/models_original.py", line 120, in forward
+    x = x + gate_msa.unsqueeze(1) * self.attn(modulate(self.norm1(x), shift_msa, scale_msa))
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/timm/models/vision_transformer.py", line 217, in forward
+    qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 432.00 MiB (GPU 0; 79.20 GiB total capacity; 74.70 GiB already allocated; 286.81 MiB free; 77.39 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+ERROR:torch.distributed.elastic.multiprocessing.api:failed (exitcode: 1) local_rank: 0 (pid: 3086362) of binary: /ext3/miniconda3/envs/DiT/bin/python
+Traceback (most recent call last):
+  File "/ext3/miniconda3/envs/DiT/bin/torchrun", line 33, in <module>
+    sys.exit(load_entry_point('torch==1.13.1', 'console_scripts', 'torchrun')())
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 346, in wrapper
+    return f(*args, **kwargs)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/distributed/run.py", line 762, in main
+    run(args)
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/distributed/run.py", line 753, in run
+    elastic_launch(
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 132, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 246, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_original.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2023-05-14_10:58:38
+  host      : ga003.hpc.nyu.edu
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3086362)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,44 @@
+WARNING:torch.distributed.run:
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+Starting rank=1, seed=1, world_size=2.
+Starting rank=0, seed=0, world_size=2.
+[[34m2023-05-16 07:57:32[0m] Experiment directory created at results/022-DiT-XL-2
+[[34m2023-05-16 07:58:01[0m] DiT Parameters: 675,129,632
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/ext3/miniconda3/envs/DiT/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 2, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+[[34m2023-05-16 07:58:06[0m] Dataset contains 1,281,167 images (/scratch/work/public/imagenet/train)
+[[34m2023-05-16 07:58:06[0m] Training for 1400 epochs...
+[[34m2023-05-16 07:58:06[0m] Beginning epoch 0...
+[[34m2023-05-16 07:58:27[0m] Reducer buckets have been rebuilt in this iteration.
+[[34m2023-05-16 08:00:35[0m] (step=0000100) Train Loss: 0.3378, Train Steps/Sec: 0.67
+[[34m2023-05-16 08:02:45[0m] (step=0000200) Train Loss: 0.2025, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:04:55[0m] (step=0000300) Train Loss: 0.1938, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:07:05[0m] (step=0000400) Train Loss: 0.1898, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:09:15[0m] (step=0000500) Train Loss: 0.1854, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:11:24[0m] (step=0000600) Train Loss: 0.1846, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:13:34[0m] (step=0000700) Train Loss: 0.1829, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:15:44[0m] (step=0000800) Train Loss: 0.1805, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:17:53[0m] (step=0000900) Train Loss: 0.1775, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:20:03[0m] (step=0001000) Train Loss: 0.1752, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:22:13[0m] (step=0001100) Train Loss: 0.1763, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:24:23[0m] (step=0001200) Train Loss: 0.1779, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:26:33[0m] (step=0001300) Train Loss: 0.1751, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:28:43[0m] (step=0001400) Train Loss: 0.1707, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:30:52[0m] (step=0001500) Train Loss: 0.1762, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:33:02[0m] (step=0001600) Train Loss: 0.1749, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:35:11[0m] (step=0001700) Train Loss: 0.1749, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:37:21[0m] (step=0001800) Train Loss: 0.1766, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:39:30[0m] (step=0001900) Train Loss: 0.1726, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:41:40[0m] (step=0002000) Train Loss: 0.1753, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:43:50[0m] (step=0002100) Train Loss: 0.1758, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:45:59[0m] (step=0002200) Train Loss: 0.1705, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:48:09[0m] (step=0002300) Train Loss: 0.1736, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:50:18[0m] (step=0002400) Train Loss: 0.1706, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:52:28[0m] (step=0002500) Train Loss: 0.1687, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:54:37[0m] (step=0002600) Train Loss: 0.1728, Train Steps/Sec: 0.77
+[[34m2023-05-16 08:56:47[0m] (step=0002700) Train Loss: 0.1689, Train Steps/Sec: 0.77
+slurmstepd: error: *** JOB 33458803 ON ga007 CANCELLED AT 2023-05-16T08:57:16 DUE TO TIME LIMIT ***
