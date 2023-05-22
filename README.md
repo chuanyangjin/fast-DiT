@@ -103,14 +103,14 @@ here is computed with 250 DDPM sampling steps, with the `mse` VAE decoder and wi
 
 
 ### Improved Training Performance
-In comparison to the original implementation, we effectively accelerate DiT-XL/2 by 73% and reduce memory usage by 55% through the utilization of gradient checkpointing, mixed-precision training, and feature pre-extraction, etc. Some data points using a global batch size of 128 with a A100:
+In comparison to the original implementation, we effectively accelerate DiT-XL/2 by 95% and reduce memory usage by 59% through the utilization of gradient checkpointing, mixed-precision training, and feature pre-extraction, etc. Some data points using a global batch size of 128 with a A100:
 
-| gradient checkpointing | mixed precision training | feature pre-extraction | training speed | memory |
-|------------------------|--------------------------|------------------------|----------------|-------------- |
-| ❌                    | ❌                       | ❌                    | -              | out of memory |
-| ✔                     | ❌                       | ❌                    | 0.43 steps/sec | 44045 MB      |
-| ✔                     | ✔                        | ❌                    | 0.56 steps/sec | 40461 MB      |
-| ✔                     | ✔                        | ✔                     | 0.84 steps/sec | 27485 MB      |
+| gradient checkpointing | mixed precision training | feature pre-extraction | training speed | memory       |
+|:----------------------:|:------------------------:|:----------------------:|:--------------:|:------------:|
+| ❌                    | ❌                       | ❌                    | -              | out of memory|
+| ✔                     | ❌                       | ❌                    | 0.43 steps/sec | 44045 MB     |
+| ✔                     | ✔                        | ❌                    | 0.56 steps/sec | 40461 MB     |
+| ✔                     | ✔                        | ✔                     | 0.84 steps/sec | 27485 MB     |
 
 
 ## Evaluation (FID, Inception Score, etc.)
