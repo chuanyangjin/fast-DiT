@@ -62,10 +62,10 @@ python sample.py --model DiT-L/4 --image-size 256 --ckpt /path/to/model.pt
 
 ## Training
 ### Preparation Before Training
-To extract ImageNet features with `N` GPUs on one node:
+To extract ImageNet features with `1` GPUs on one node:
 
 ```bash
-torchrun --nnodes=1 --nproc_per_node=N extract_features.py --model DiT-XL/2 --data-path /path/to/imagenet/train --feature-path /path/to/store/features
+torchrun --nnodes=1 --nproc_per_node=1 extract_features.py --model DiT-XL/2 --data-path /path/to/imagenet/train --feature-path /path/to/store/features
 ```
 
 ### Training DiT
@@ -103,8 +103,8 @@ here is computed with 250 DDPM sampling steps, with the `mse` VAE decoder and wi
 
 
 ### Improved Training Performance
-In comparison to the original implementation, we effectively accelerate DiT-XL/2 by 95% and reduce memory usage by 59% through the utilization of gradient checkpointing, mixed-precision training, and feature pre-extraction, etc. Some data points using a global batch size of 128 with a A100:
-
+In comparison to the original implementation, we implement a selection of training speed acceleration and memory saving features including gradient checkpointing, mixed precision training, and pre-extracted VAE features, resulting in a 95% speed increase and 60% memory reduction on DiT-XL/2. Some data points using a global batch size of 128 with a A100:
+ 
 | gradient checkpointing | mixed precision training | feature pre-extraction | training speed | memory       |
 |:----------------------:|:------------------------:|:----------------------:|:--------------:|:------------:|
 | ❌                    | ❌                       | ❌                    | -              | out of memory|

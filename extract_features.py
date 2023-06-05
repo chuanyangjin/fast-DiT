@@ -123,6 +123,12 @@ def main(args):
     torch.cuda.set_device(device)
     print(f"Starting rank={rank}, seed={seed}, world_size={dist.get_world_size()}.")
 
+    # Setup a feature folder:
+    if rank == 0:
+        os.makedirs(args.features_path, exist_ok=True)
+        os.makedirs(os.path.join(args.features_path, 'imagenet256_features'), exist_ok=True)
+        os.makedirs(os.path.join(args.features_path, 'imagenet256_labels'), exist_ok=True)
+
     # Create model:
     assert args.image_size % 8 == 0, "Image size must be divisible by 8 (for the VAE encoder)."
     latent_size = args.image_size // 8
@@ -174,7 +180,7 @@ if __name__ == "__main__":
     # Default args here will train DiT-XL/2 with the hyperparameters we used in our paper (except training iters).
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-path", type=str, required=True)
-    parser.add_argument("--feature-path", type=str, default="/vast/cj2133")
+    parser.add_argument("--feature-path", type=str, default="features")
     parser.add_argument("--results-dir", type=str, default="results")
     parser.add_argument("--model", type=str, choices=list(DiT_models.keys()), default="DiT-XL/2")
     parser.add_argument("--image-size", type=int, choices=[256, 512], default=256)
