@@ -168,10 +168,10 @@ def main(args):
             x = vae.encode(x).latent_dist.sample().mul_(0.18215)
             
         x = x.detach().cpu().numpy()    # (1, 4, 32, 32)
-        np.save(f'{args.feature_path}/imagenet256_features/{train_steps}.npy', x)
+        np.save(f'{args.features_path}/imagenet256_features/{train_steps}.npy', x)
 
         y = y.detach().cpu().numpy()    # (1,)
-        np.save(f'{args.feature_path}/imagenet256_labels/{train_steps}.npy', y)
+        np.save(f'{args.features_path}/imagenet256_labels/{train_steps}.npy', y)
             
         train_steps += 1
         print(train_steps)
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     # Default args here will train DiT-XL/2 with the hyperparameters we used in our paper (except training iters).
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-path", type=str, required=True)
-    parser.add_argument("--feature-path", type=str, default="features")
+    parser.add_argument("--features-path", type=str, default="features")
     parser.add_argument("--results-dir", type=str, default="results")
     parser.add_argument("--model", type=str, choices=list(DiT_models.keys()), default="DiT-XL/2")
     parser.add_argument("--image-size", type=int, choices=[256, 512], default=256)
