@@ -99,8 +99,8 @@ class CustomDataset(Dataset):
         self.features_dir = features_dir
         self.labels_dir = labels_dir
 
-        self.features_files = os.listdir(features_dir)
-        self.labels_files = os.listdir(labels_dir)
+        self.features_files = sorted(os.listdir(features_dir))
+        self.labels_files = sorted(os.listdir(labels_dir))
 
     def __len__(self):
         assert len(self.features_files) == len(self.labels_files), \
