@@ -68,7 +68,8 @@ def main(args):
     latent_size = args.image_size // 8
     model = DiT_models[args.model](
         input_size=latent_size,
-        num_classes=args.num_classes
+        num_classes=args.num_classes,
+        register=args.register
     ).to(device)
     # Auto-download a pre-trained model or load a custom DiT checkpoint from train.py:
     ckpt_path = args.ckpt or f"DiT-XL-2-{args.image_size}x{args.image_size}.pt"
@@ -84,7 +85,7 @@ def main(args):
     model_string_name = args.model.replace("/", "-")
     ckpt_string_name = os.path.basename(args.ckpt).replace(".pt", "") if args.ckpt else "pretrained"
     folder_name = f"{model_string_name}-{ckpt_string_name}-size-{args.image_size}-vae-{args.vae}-" \
-                  f"cfg-{args.cfg_scale}-seed-{args.global_seed}"
+                  f"cfg-{args.cfg_scale}-seed-{args.global_seed}_register-{args.register}"
     sample_folder_dir = f"{args.sample_dir}/{folder_name}"
     if rank == 0:
         os.makedirs(sample_folder_dir, exist_ok=True)
@@ -155,12 +156,13 @@ if __name__ == "__main__":
     parser.add_argument("--num-fid-samples", type=int, default=50_000)
     parser.add_argument("--image-size", type=int, choices=[256, 512], default=256)
     parser.add_argument("--num-classes", type=int, default=1000)
-    parser.add_argument("--cfg-scale",  type=float, default=1.5)
+    parser.add_argument("--cfg-scale",  type=float, default=1.0)
     parser.add_argument("--num-sampling-steps", type=int, default=250)
     parser.add_argument("--global-seed", type=int, default=0)
     parser.add_argument("--tf32", action=argparse.BooleanOptionalAction, default=True,
                         help="By default, use TF32 matmuls. This massively accelerates sampling on Ampere GPUs.")
     parser.add_argument("--ckpt", type=str, default=None,
                         help="Optional path to a DiT checkpoint (default: auto-download a pre-trained DiT-XL/2 model).")
+    parser.add_argument("--register", type=int, default=0)
     args = parser.parse_args()
     main(args)

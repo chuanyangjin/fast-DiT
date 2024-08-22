@@ -14,6 +14,7 @@ import torch.nn as nn
 import numpy as np
 import math
 from timm.models.vision_transformer import PatchEmbed, Attention, Mlp
+import einops
 
 
 def modulate(x, shift, scale):
@@ -105,7 +106,8 @@ class DiTBlock(nn.Module):
     def __init__(self, hidden_size, num_heads, mlp_ratio=4.0, **block_kwargs):
         super().__init__()
         self.norm1 = nn.LayerNorm(hidden_size, elementwise_affine=False, eps=1e-6)
-        self.attn = Attention(hidden_size, num_heads=num_heads, qkv_bias=True, **block_kwargs)
+        # self.attn = Attention(hidden_size, num_heads=num_heads, qkv_bias=True, **block_kwargs)
+        self.attn = Attention(hidden_size, num_heads=num_heads, qkv_bias=True)
         self.norm2 = nn.LayerNorm(hidden_size, elementwise_affine=False, eps=1e-6)
         mlp_hidden_dim = int(hidden_size * mlp_ratio)
         approx_gelu = lambda: nn.GELU(approximate="tanh")
@@ -114,6 +116,13 @@ class DiTBlock(nn.Module):
             nn.SiLU(),
             nn.Linear(hidden_size, 6 * hidden_size, bias=True)
         )
+
+        # self.register = block_kwargs.get('register', 0)
+        # if self.register:
+        #     self.adaLN_modulation = nn.Sequential(
+        #         nn.SiLU(),
+        #         nn.Linear(hidden_size, 6 * hidden_size + self.register, bias=True)
+        #     )
 
     def forward(self, x, c):
         shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.adaLN_modulation(c).chunk(6, dim=1)
@@ -158,6 +167,7 @@ class DiT(nn.Module):
         class_dropout_prob=0.1,
         num_classes=1000,
         learn_sigma=True,
+        register=0,
     ):
         super().__init__()
         self.learn_sigma = learn_sigma
@@ -174,10 +184,15 @@ class DiT(nn.Module):
         self.pos_embed = nn.Parameter(torch.zeros(1, num_patches, hidden_size), requires_grad=False)
 
         self.blocks = nn.ModuleList([
-            DiTBlock(hidden_size, num_heads, mlp_ratio=mlp_ratio) for _ in range(depth)
+            DiTBlock(hidden_size, num_heads, mlp_ratio=mlp_ratio, register=register) for _ in range(depth)
         ])
         self.final_layer = FinalLayer(hidden_size, patch_size, self.out_channels)
         self.initialize_weights()
+
+        self.register = register
+        T = input_size ** 2 // patch_size ** 2
+        self.register_token = nn.Parameter(
+            torch.zeros(register, hidden_size), requires_grad=False)
 
     def initialize_weights(self):
         # Initialize transformer layers:
@@ -220,6 +235,8 @@ class DiT(nn.Module):
         x: (N, T, patch_size**2 * C)
         imgs: (N, H, W, C)
         """
+        if self.register:
+            x= x[:, :-self.register]
         c = self.out_channels
         p = self.x_embedder.patch_size[0]
         h = w = int(x.shape[1] ** 0.5)
@@ -229,7 +246,7 @@ class DiT(nn.Module):
         x = torch.einsum('nhwpqc->nchpwq', x)
         imgs = x.reshape(shape=(x.shape[0], c, h * p, h * p))
         return imgs
-    
+
     def ckpt_wrapper(self, module):
         def ckpt_forward(*inputs):
             outputs = module(*inputs)
@@ -243,7 +260,9 @@ class DiT(nn.Module):
         t: (N,) tensor of diffusion timesteps
         y: (N,) tensor of class labels
         """
-        x = self.x_embedder(x) + self.pos_embed  # (N, T, D), where T = H * W / patch_size ** 2
+        x = self.x_embedder(x) + self.pos_embed  # (N, T, D), where T = H * W / patch_size ** 2, T is total number of patches(tokens)
+        if self.register :
+            x = torch.cat([x, einops.repeat(self.register_token, 'R D -> N R D', N=x.shape[0] )], dim=1)
         t = self.t_embedder(t)                   # (N, D)
         y = self.y_embedder(y, self.training)    # (N, D)
         c = t + y                                # (N, D)

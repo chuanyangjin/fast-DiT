@@ -7,6 +7,8 @@
 """
 A minimal training script for DiT.
 """
+from download import find_model
+from torch.utils.tensorboard import SummaryWriter
 import torch
 # the first flag below was False when we tested this script but True makes A100 training a lot faster:
 torch.backends.cuda.matmul.allow_tf32 = True
@@ -31,6 +33,7 @@ from accelerate import Accelerator
 from models import DiT_models
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL
+
 
 
 #################################################################################
@@ -130,23 +133,43 @@ def main(args):
     accelerator = Accelerator()
     device = accelerator.device
 
+    # if accelerator.is_main_process:
+    #     import ipdb; ipdb.set_trace()
+
+
+
+
     # Setup an experiment folder:
     if accelerator.is_main_process:
-        os.makedirs(args.results_dir, exist_ok=True)  # Make results folder (holds all experiment subfolders)
+        os.makedirs(args.results_dir, exist_ok=True)
+        # Make results folder (holds all experiment subfolders)
         experiment_index = len(glob(f"{args.results_dir}/*"))
-        model_string_name = args.model.replace("/", "-")  # e.g., DiT-XL/2 --> DiT-XL-2 (for naming folders)
-        experiment_dir = f"{args.results_dir}/{experiment_index:03d}-{model_string_name}"  # Create an experiment folder
-        checkpoint_dir = f"{experiment_dir}/checkpoints"  # Stores saved model checkpoints
+        # e.g., DiT-XL/2 --> DiT-XL-2 (for naming folders)
+        model_string_name = args.model.replace("/", "-")
+        # experiment_dir = f"{args.results_dir}/{experiment_index:03d}-{model_string_name}"  # Create an experiment folder
+        experiment_dir = f"{args.results_dir}/{model_string_name}_register{args.register}"
+        # Stores saved model checkpoints
+        checkpoint_dir = f"{experiment_dir}/checkpoints"
+        if args.load_checkpoint:
+            # Find the latest checkpoint in the checkpoint directory:
+            checkpoint_files = sorted(glob(f"{checkpoint_dir}/*.pt"))
+            if len(checkpoint_files) > 0:
+                latest_checkpoint = checkpoint_files[-1]
+            experiment_dir += f"_resume{latest_checkpoint.split('/')[-1].split('.')[0]}"
+
+        os.makedirs(experiment_dir, exist_ok=True)
         os.makedirs(checkpoint_dir, exist_ok=True)
         logger = create_logger(experiment_dir)
         logger.info(f"Experiment directory created at {experiment_dir}")
+        writer = SummaryWriter(experiment_dir)
 
     # Create model:
     assert args.image_size % 8 == 0, "Image size must be divisible by 8 (for the VAE encoder)."
     latent_size = args.image_size // 8
     model = DiT_models[args.model](
         input_size=latent_size,
-        num_classes=args.num_classes
+        num_classes=args.num_classes,
+        register=args.register
     )
     # Note that parameter initialization is done within the DiT constructor
     model = model.to(device)
@@ -179,14 +202,27 @@ def main(args):
     update_ema(ema, model, decay=0)  # Ensure EMA is initialized with synced weights
     model.train()  # important! This enables embedding dropout for classifier-free guidance
     ema.eval()  # EMA model should always be in eval mode
+    if accelerator.is_main_process and args.load_checkpoint:
+        train_steps_resume = 0
+        # Find the latest checkpoint in the checkpoint directory:
+        checkpoint_files = sorted(glob(f"{checkpoint_dir}/*.pt"))
+        if len(checkpoint_files) > 0:
+            latest_checkpoint = checkpoint_files[-1]
+            logger.info(f"Loading checkpoint from {latest_checkpoint}")
+            state_dict = find_model(latest_checkpoint)
+            model.load_state_dict(state_dict)
+            train_steps_resume = int(latest_checkpoint.split("/")[-1].split(".")[0])
+        else:
+            logger.info("No checkpoints found in the checkpoint directory.")
+            logger.info("Training from scratch...")
     model, opt, loader = accelerator.prepare(model, opt, loader)
 
     # Variables for monitoring/logging purposes:
-    train_steps = 0
+    train_steps = 0 if not args.load_checkpoint else train_steps_resume
     log_steps = 0
     running_loss = 0
     start_time = time()
-    
+
     if accelerator.is_main_process:
         logger.info(f"Training for {args.epochs} epochs...")
     for epoch in range(args.epochs):
@@ -194,11 +230,15 @@ def main(args):
             logger.info(f"Beginning epoch {epoch}...")
         for x, y in loader:
             x = x.to(device)
-            y = y.to(device)
+            if args.unconditional:
+                y = torch.tensor([1000]*x.shape[0], device=device).unsqueeze(-1)
+            else:
+                y = y.to(device)
             x = x.squeeze(dim=1)
             y = y.squeeze(dim=1)
             t = torch.randint(0, diffusion.num_timesteps, (x.shape[0],), device=device)
             model_kwargs = dict(y=y)
+            # model_kwargs = dict(y=y, register=args.register)
             loss_dict = diffusion.training_losses(model, x, t, model_kwargs)
             loss = loss_dict["loss"].mean()
             opt.zero_grad()
@@ -217,9 +257,12 @@ def main(args):
                 steps_per_sec = log_steps / (end_time - start_time)
                 # Reduce loss history over all processes:
                 avg_loss = torch.tensor(running_loss / log_steps, device=device)
-                avg_loss = avg_loss.item() / accelerator.num_processes
+                avg_loss = avg_loss.item()
+                # avg_loss = avg_loss.item() / accelerator.num_processes
                 if accelerator.is_main_process:
                     logger.info(f"(step={train_steps:07d}) Train Loss: {avg_loss:.4f}, Train Steps/Sec: {steps_per_sec:.2f}")
+                    writer.add_scalar("train/loss", avg_loss, train_steps)
+                    writer.add_scalar("train/steps_per_sec", steps_per_sec, train_steps)
                 # Reset monitoring variables:
                 running_loss = 0
                 log_steps = 0
@@ -240,7 +283,7 @@ def main(args):
 
     model.eval()  # important! This disables randomized embedding dropout
     # do any sampling/FID calculation/etc. with ema (or model) in eval mode ...
-    
+
     if accelerator.is_main_process:
         logger.info("Done!")
 
@@ -250,7 +293,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--feature-path", type=str, default="features")
     parser.add_argument("--results-dir", type=str, default="results")
-    parser.add_argument("--model", type=str, choices=list(DiT_models.keys()), default="DiT-XL/2")
+    parser.add_argument("--model", type=str, choices=list(DiT_models.keys()), default="DiT-B/2")
     parser.add_argument("--image-size", type=int, choices=[256, 512], default=256)
     parser.add_argument("--num-classes", type=int, default=1000)
     parser.add_argument("--epochs", type=int, default=1400)
@@ -260,5 +303,8 @@ if __name__ == "__main__":
     parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--log-every", type=int, default=100)
     parser.add_argument("--ckpt-every", type=int, default=50_000)
+    parser.add_argument("--unconditional", action="store_true")
+    parser.add_argument("--register", type=int, default=0)
+    parser.add_argument("--load-checkpoint", action="store_true", help="Load the latest checkpoint in the checkpoint directory")
     args = parser.parse_args()
     main(args)
