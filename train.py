@@ -7,7 +7,7 @@
 """
 A minimal training script for DiT.
 """
-from download import find_model
+from download import find_model, load_model
 from torch.utils.tensorboard import SummaryWriter
 import torch
 # the first flag below was False when we tested this script but True makes A100 training a lot faster:
@@ -79,7 +79,7 @@ def create_logger(logging_dir):
 def center_crop_arr(pil_image, image_size):
     """
     Center cropping implementation from ADM.
-    https://github.com/openai/guided-diffusion/blob/8fb3ad9197f16bbc40620447b2742e13458d2831/guided_diffusion/image_datasets.py#L126
+    https://github.com/openai/guided-diffusion/blob/83fb3ad9197f16bbc40620447b2742e13458d2831/guided_diffusion/image_datasets.py#L126
     """
     while min(*pil_image.size) >= 2 * image_size:
         pil_image = pil_image.resize(
@@ -155,7 +155,7 @@ def main(args):
             checkpoint_files = sorted(glob(f"{checkpoint_dir}/*.pt"))
             if len(checkpoint_files) > 0:
                 latest_checkpoint = checkpoint_files[-1]
-            experiment_dir += f"_resume{latest_checkpoint.split('/')[-1].split('.')[0]}"
+                experiment_dir += f"_resume{latest_checkpoint.split('/')[-1].split('.')[0]}"
 
         os.makedirs(experiment_dir, exist_ok=True)
         os.makedirs(checkpoint_dir, exist_ok=True)
@@ -202,15 +202,16 @@ def main(args):
     update_ema(ema, model, decay=0)  # Ensure EMA is initialized with synced weights
     model.train()  # important! This enables embedding dropout for classifier-free guidance
     ema.eval()  # EMA model should always be in eval mode
+    train_steps_resume = 0
     if accelerator.is_main_process and args.load_checkpoint:
-        train_steps_resume = 0
         # Find the latest checkpoint in the checkpoint directory:
         checkpoint_files = sorted(glob(f"{checkpoint_dir}/*.pt"))
         if len(checkpoint_files) > 0:
             latest_checkpoint = checkpoint_files[-1]
             logger.info(f"Loading checkpoint from {latest_checkpoint}")
-            state_dict = find_model(latest_checkpoint)
-            model.load_state_dict(state_dict)
+            model_state_dict, opt_state_dict = load_model(latest_checkpoint)
+            model.load_state_dict(model_state_dict)
+            opt.load_state_dict(opt_state_dict)
             train_steps_resume = int(latest_checkpoint.split("/")[-1].split(".")[0])
         else:
             logger.info("No checkpoints found in the checkpoint directory.")
@@ -218,7 +219,7 @@ def main(args):
     model, opt, loader = accelerator.prepare(model, opt, loader)
 
     # Variables for monitoring/logging purposes:
-    train_steps = 0 if not args.load_checkpoint else train_steps_resume
+    train_steps = train_steps_resume
     log_steps = 0
     running_loss = 0
     start_time = time()
