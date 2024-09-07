@@ -191,8 +191,9 @@ class DiT(nn.Module):
 
         self.register = register
         T = input_size ** 2 // patch_size ** 2
-        self.register_token = nn.Parameter(
-            torch.zeros(register, hidden_size), requires_grad=False)
+        if self.register:
+            self.register_token = nn.Parameter(
+                torch.zeros(register, hidden_size), requires_grad=True)
 
     def initialize_weights(self):
         # Initialize transformer layers:
