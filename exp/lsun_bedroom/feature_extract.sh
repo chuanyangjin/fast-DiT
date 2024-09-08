@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=3
+torchrun --nnodes=1 --nproc_per_node=1 extract_features.py --data-path /media/dataset1/LSUN/bedroom --features-path /media/dataset1/project/jiwon/fast-DiT/features --num-classes 1 --lsun

@@ -128,7 +128,6 @@ def main(args):
     Trains a new DiT model.
     """
     assert torch.cuda.is_available(), "Training currently requires at least one GPU."
-
     # Setup accelerator:
     accelerator = Accelerator()
     device = accelerator.device
@@ -136,8 +135,12 @@ def main(args):
     # if accelerator.is_main_process:
     #     import ipdb; ipdb.set_trace()
 
+    if args.lsun:
+        if args.num_classes != 1 :
+            warnings.warn("LSUN bedroom dataset is used, but num_classes is not set to 1. Setting num_classes to 1.")
+            args.num_classes = 1
 
-
+        assert args.num_classes == 1
 
     # Setup an experiment folder:
     if accelerator.is_main_process:
@@ -148,6 +151,7 @@ def main(args):
         model_string_name = args.model.replace("/", "-")
         # experiment_dir = f"{args.results_dir}/{experiment_index:03d}-{model_string_name}"  # Create an experiment folder
         experiment_dir = f"{args.results_dir}/{model_string_name}_register{args.register}"
+        if args.lsun: experiment_dir += "_lsun"
         # Stores saved model checkpoints
         checkpoint_dir = f"{experiment_dir}/checkpoints"
         if args.load_checkpoint:
@@ -184,8 +188,12 @@ def main(args):
     opt = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0)
 
     # Setup data:
-    features_dir = f"{args.feature_path}/imagenet256_features"
-    labels_dir = f"{args.feature_path}/imagenet256_labels"
+    if args.lsun:
+        features_dir = f"{args.feature_path}/lsun_features"
+        labels_dir = f"{args.feature_path}/lsun_labels"
+    else :
+        features_dir = f"{args.feature_path}/imagenet256_features"
+        labels_dir = f"{args.feature_path}/imagenet256_labels"
     dataset = CustomDataset(features_dir, labels_dir)
     loader = DataLoader(
         dataset,
@@ -307,5 +315,6 @@ if __name__ == "__main__":
     parser.add_argument("--unconditional", action="store_true")
     parser.add_argument("--register", type=int, default=0)
     parser.add_argument("--load-checkpoint", action="store_true", help="Load the latest checkpoint in the checkpoint directory")
+    parser.add_argument("--lsun", action="store_true")
     args = parser.parse_args()
     main(args)
