@@ -125,3 +125,15 @@ torchrun --nnodes=1 --nproc_per_node=N sample_ddp.py --model DiT-XL/2 --num-fid-
 ```
 
 There are several additional options; see [`sample_ddp.py`](sample_ddp.py) for details.
+
+
+## Citation
+
+```bibtex
+@misc{2024fast,
+    title={Fast-DiT: Fast Diffusion Models with Transformers},
+    author={Jin, Chuanyang and Xie, Saining},
+    howpublished = {\url{https://github.com/chuanyangjin/fast-DiT}},
+    year={2024}
+}
+```
