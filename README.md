@@ -103,7 +103,7 @@ here is computed with 250 DDPM sampling steps, with the `mse` VAE decoder and wi
 
 
 ### Improved Training Performance
-In comparison to the original implementation, we implement a selection of training speed acceleration and memory saving features including gradient checkpointing, mixed precision training, and pre-extracted VAE features, resulting in a 95% speed increase and 60% memory reduction on DiT-XL/2. Some data points using a global batch size of 128 with a A100:
+In comparison to the original implementation, we implement a selection of training speed acceleration and memory saving features including gradient checkpointing, mixed precision training, and pre-extracted VAE features, resulting in a 95% speed increase and 60% memory reduction on DiT-XL/2. Some data points using a global batch size of 128 with an A100:
  
 | gradient checkpointing | mixed precision training | feature pre-extraction | training speed | memory       |
 |:----------------------:|:------------------------:|:----------------------:|:--------------:|:------------:|
@@ -130,7 +130,7 @@ There are several additional options; see [`sample_ddp.py`](sample_ddp.py) for d
 ## Citation
 
 ```bibtex
-@misc{2024fast,
+@misc{jin2024fast,
     title={Fast-DiT: Fast Diffusion Models with Transformers},
     author={Jin, Chuanyang and Xie, Saining},
     howpublished = {\url{https://github.com/chuanyangjin/fast-DiT}},
